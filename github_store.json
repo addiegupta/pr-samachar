@@ -1,0 +1,12 @@
+{
+  "organisation": "usernames",
+  "repos": {
+    "sentieo_web": "sentieoweb"
+  },
+  "labels": {
+    "rmsv2": "rmsv2",
+    "dont_merge": "Don't Merge",
+    "changes_requested": "Requested",
+    "changes_made": "Changes made"
+  }
+}

@@ -1,7 +1,11 @@
 import sys
 
-from github_utils import repos, get_prs_request
+from github_utils import get_prs_request
 from network_utils import set_auth_token
+
+
+def fetch_rmsv2_prs():
+    r = get_prs_request('sentieo_web')
 
 
 def main(argv):
@@ -11,7 +15,7 @@ def main(argv):
     except IndexError:
         auth_token = None
     set_auth_token(auth_token)
-    r = get_prs_request(repos['sentieo_web'])
+    fetch_rmsv2_prs()
 
 
 if __name__ == '__main__':
