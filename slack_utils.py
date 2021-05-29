@@ -51,7 +51,7 @@ def get_pr_status_message(pr):
     if not pr_stale:
         pr_emojis.reverse()
 
-    return 'Health: %s\n%s' % (pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
+    return '_Health_: %s %s' % (pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
 
 
 def create_greetings_message(valid_prs):
@@ -67,13 +67,14 @@ def create_greetings_message(valid_prs):
 
     pr_message_body = ''
 
-    for pr in valid_prs:
+    for i, pr in enumerate(valid_prs):
         pr_title = pr['title']
         pr_author = pr['user']['login']
         pr_url = pr['html_url']
         pr_labels = get_labels_info(pr)
         pr_status = get_pr_status_message(pr)
-        pr_message = '\n%s by %s\nLabels: %s\n%s\n%s\n' % (pr_title, pr_author, pr_labels, pr_status, pr_url)
+        pr_message = '\n%s)  *%s* by %s\n\t_Labels_: %s %s\n\t%s\n\n' % (
+            i + 1, pr_title, pr_author, pr_labels, pr_status, pr_url)
         pr_message_body += pr_message
 
     return '\n'.join([salutation, message_status, pr_message_body])

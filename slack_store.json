@@ -20,56 +20,92 @@
   },
   "pr_status": [
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice0"
+      "health": "Mauj hai",
+      "emoji": "partying_face"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice1"
+      "health": "Sab changa si",
+      "emoji": "elated"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice2"
-    },
-    {
-      "health": "Sab Changa Si",
+      "health": "Too young",
       "emoji": "nice"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Hmmmmm",
+      "emoji": "slightly_frowning_face"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Surely not that bad",
+      "emoji": "sad_pepe"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Apna time aayega",
+      "emoji": "crossed_fingers"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Bimaar",
+      "emoji": "smiling_face_with_tear"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Dil se bura lagta hai",
+      "emoji": "sad"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "health": "Khatam bye bye tata goodbye",
+      "emoji": "cold_sweat"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice10"
+      "health": "Koi hai?",
+      "emoji": "tolerant"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice11"
+      "health": "Danger of extinction",
+      "emoji": "see_no_evil"
     },
     {
-      "health": "Sab Changa Si",
-      "emoji": "nice12"
+      "health": "Nothing matters anyway",
+      "emoji": "rick"
+    },
+    {
+      "health": "Why",
+      "emoji": "frustrated"
+    },
+    {
+      "health": "Maine kya bigada hai",
+      "emoji": "control"
+    },
+    {
+      "health": "All is well",
+      "emoji": "frustrated-mask"
+    },
+    {
+      "health": "Look at meee",
+      "emoji": "meeseeks"
+    },
+    {
+      "health": "Kya karun main marjaun",
+      "emoji": "matchman"
+    },
+    {
+      "health": "Tired of conflicts",
+      "emoji": "weary"
+    },
+    {
+      "health": "Huhhh",
+      "emoji": "rajpal"
+    },
+    {
+      "health": "Please",
+      "emoji": "harmonium"
+    },
+    {
+      "health": "Life has no meaning",
+      "emoji": "parachuteman"
+    },
+    {
+      "health": "Release day pe kuch ho hi jayega",
+      "emoji": "newsman"
     }
   ]
 }

@@ -35,7 +35,7 @@ def get_prs_request(repo, query_params={}):
         'q': query_params_to_string(query_params),
         'sort': 'created',
         'order': 'asc',
-        'per_page': 100
+        'per_page': 40
     }
 
     return get_request(pulls_url, payload)
