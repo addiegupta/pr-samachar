@@ -1,4 +1,5 @@
 import sys
+import pyperclip
 
 from github_utils import get_prs_request
 from network_utils import set_auth_token
@@ -20,7 +21,6 @@ def fetch_valid_rmsv2_prs(config=None):
     valid_prs = []
     if 'items' in r.json():
         valid_prs = r.json()['items']
-    # print('result is ', valid_prs)
     return valid_prs
 
 
@@ -33,6 +33,7 @@ def main(argv):
     set_auth_token(auth_token)
     valid_prs = fetch_valid_rmsv2_prs()
     greetings_message = create_greetings_message(valid_prs)
+    pyperclip.copy(greetings_message)
     print("greetings message is ", greetings_message)
 
 

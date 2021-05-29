@@ -4,8 +4,17 @@
     "ayudh": "Ayudh Gupta"
   },
   "message_status": {
-    "available": "Here are the open pull requests worth looking into today",
+    "available": "Here are the %s open pull requests worth looking into today",
     "not_available": "Looks like there are no open pull requests!"
+  },
+  "label_emoji": {
+    "95D4FA": "large_blue_circle",
+    "46B275": "large_green_circle",
+    "d4c5f9": "large_purple_circle",
+    "d73a4a": "red_circle",
+    "d93f0b": "red_circle",
+    "fbca04": "large_yellow_circle",
+    "a2eeef": "large_blue_circle"
   },
   "pr_status": [
     {
