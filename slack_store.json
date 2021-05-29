@@ -3,9 +3,11 @@
     "atul_kumar": "Atul Kumar",
     "ayudh": "Ayudh Gupta"
   },
-  "message_status": {
-    "available": "Here are the %s open pull requests worth looking into today",
-    "not_available": "Looks like there are no open pull requests!"
+  "stale_pr_days": "3",
+  "message_template": {
+    "salutation": "Namaste %s!",
+    "prs_available": "Here are the %s open pull requests worth looking into today",
+    "prs_not_available": "Looks like there are no open pull requests!"
   },
   "label_emoji": {
     "95D4FA": "large_blue_circle",
@@ -19,7 +21,15 @@
   "pr_status": [
     {
       "health": "Sab Changa Si",
-      "emoji": "nice"
+      "emoji": "nice0"
+    },
+    {
+      "health": "Sab Changa Si",
+      "emoji": "nice1"
+    },
+    {
+      "health": "Sab Changa Si",
+      "emoji": "nice2"
     },
     {
       "health": "Sab Changa Si",
@@ -51,23 +61,15 @@
     },
     {
       "health": "Sab Changa Si",
-      "emoji": "nice"
+      "emoji": "nice10"
     },
     {
       "health": "Sab Changa Si",
-      "emoji": "nice"
+      "emoji": "nice11"
     },
     {
       "health": "Sab Changa Si",
-      "emoji": "nice"
-    },
-    {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
-    },
-    {
-      "health": "Sab Changa Si",
-      "emoji": "nice"
+      "emoji": "nice12"
     }
   ]
 }
