@@ -1,15 +1,17 @@
-import requests
 import sys
 
-from github_utils import get_pull_requests, repos
+from github_utils import repos, get_prs_request
+from network_utils import set_auth_token
 
 
 def main(argv):
     print("args is ", argv)
-    pulls_url = get_pull_requests(repos['sentieo_web'])
-    r = requests.get(pulls_url)
-    print('request data is ', r)
-    print('json is ', r.json())
+    try:
+        auth_token = argv[1]
+    except IndexError:
+        auth_token = None
+    set_auth_token(auth_token)
+    r = get_prs_request(repos['sentieo_web'])
 
 
 if __name__ == '__main__':
