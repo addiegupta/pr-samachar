@@ -4,8 +4,18 @@ from github_utils import get_prs_request
 from network_utils import set_auth_token
 
 
-def fetch_rmsv2_prs():
-    r = get_prs_request('sentieo_web')
+def fetch_mergeable_rmsv2_prs(config=None):
+    # currently config is not being passed, can be added later with
+    # command line args support
+    if config is None:
+        config = {
+            'label': ['rmsv2'],
+            '-label': ['dont_merge', 'changes_requested'],
+            'draft': 'false'
+        }
+
+    r = get_prs_request('sentieo_web', config)
+    print('result is ', r.json())
 
 
 def main(argv):
@@ -15,7 +25,7 @@ def main(argv):
     except IndexError:
         auth_token = None
     set_auth_token(auth_token)
-    fetch_rmsv2_prs()
+    fetch_mergeable_rmsv2_prs()
 
 
 if __name__ == '__main__':

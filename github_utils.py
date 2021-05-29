@@ -21,6 +21,14 @@ def get_search_url():
 def get_prs_request(repo, query_params={}):
     pulls_url = get_search_url()
     query_params['is'] = 'pr'
+    query_params['is'] = 'open'
     query_params['repo'] = get_full_repo(repo)
+
+    label_keys = ['label', '-label']
+    for key in label_keys:
+        if key in query_params:
+            for i, v in enumerate(query_params[key]):
+                query_params[key][i] = github_store['labels'][v]
+
     payload = {'q': query_params_to_string(query_params)}
     return get_request(pulls_url, payload)
