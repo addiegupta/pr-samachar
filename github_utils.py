@@ -30,5 +30,12 @@ def get_prs_request(repo, query_params={}):
             for i, v in enumerate(query_params[key]):
                 query_params[key][i] = github_store['labels'][v]
 
-    payload = {'q': query_params_to_string(query_params)}
+    # by default per_page is 30, max is 100
+    payload = {
+        'q': query_params_to_string(query_params),
+        'sort': 'created',
+        'order': 'asc',
+        'per_page': 100
+    }
+
     return get_request(pulls_url, payload)
