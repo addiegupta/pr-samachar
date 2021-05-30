@@ -1,8 +1,11 @@
 from helper_utils import query_params_to_string
 from network_utils import get_request
 import json
+import os
 
-github_store = json.load(open('./github_store.json'))
+dirname = os.path.dirname(__file__)
+github_filename = os.path.join(dirname, 'github_store.json')
+github_store = json.load(open(github_filename))
 
 
 # returns full repo name (organisation/repo)

@@ -1,7 +1,10 @@
 import json
 from datetime import datetime
+import os
 
-slack_store = json.load(open('./slack_store.json'))
+dirname = os.path.dirname(__file__)
+slack_filename = os.path.join(dirname, 'slack_store.json')
+slack_store = json.load(open(slack_filename))
 date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 
 # To display only emoji for the day; else include all till stale limit
