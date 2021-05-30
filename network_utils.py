@@ -12,7 +12,10 @@ def set_auth_token(token):
 
 def get_request(url, payload={}):
     header_dict = {'Authorization': 'token ' + auth_token}
-    logging.basicConfig(level=logging.DEBUG)
+
+    # Uncomment to enable logging
+    # logging.basicConfig(level=logging.DEBUG)
+
     r = requests.get(url, headers=header_dict, params=payload)
-    print('response is ', r)
+    print('\nresponse is ', r)
     return r

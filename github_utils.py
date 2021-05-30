@@ -2,10 +2,10 @@ from helper_utils import query_params_to_string
 from network_utils import get_request
 import json
 
-github_store_file = open('./github_store.json')
-github_store = json.load(github_store_file)
+github_store = json.load(open('./github_store.json'))
 
 
+# returns full repo name (organisation/repo)
 def get_full_repo(repo):
     return github_store['organisation'] + '/' + github_store['repos'][repo]
 
