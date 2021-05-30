@@ -65,6 +65,7 @@ def create_greetings_message(valid_prs):
     if prs_available:
         message_status = message_status % len(valid_prs)
 
+    username_mention = '@channel'
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
@@ -77,4 +78,4 @@ def create_greetings_message(valid_prs):
             i + 1, pr_title, pr_author, pr_labels, pr_status, pr_url)
         pr_message_body += pr_message
 
-    return '\n'.join([salutation, message_status, pr_message_body])
+    return '\n'.join([salutation, message_status, username_mention, pr_message_body])
