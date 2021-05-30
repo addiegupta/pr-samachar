@@ -5,9 +5,21 @@ slack_store_file = open('./slack_store.json')
 slack_store = json.load(slack_store_file)
 date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 
+# To display only emoji for the day; else include all till stale limit
+single_emoji_mode = True
+
 
 def emojify(emoji_key):
     return ':%s:' % emoji_key
+
+
+def get_emoji_for_number(num):
+    if num < 10:
+        return emojify(slack_store['numeral_to_text_map'][str(num)])
+    else:
+        a = num // 10
+        b = num % 10
+        return get_emoji_for_number(a) + get_emoji_for_number(b)
 
 
 def get_labels_info(pr):
@@ -36,22 +48,26 @@ def get_pr_status_message(pr):
     # should not exceed max dict length of pr status
     days_since_creation = min(days_since_creation, len(pr_status_store) - 1)
 
-    # if days since creation is less than pr stale limit, emojis shown from day 0 to day stale in reverse (positive
-    # emojis) else emojis from day of being stale till number of days (negative emojis)
-    # pr_status_index = days_since_creation
     pr_stale = days_since_creation >= stale_pr_limit
     pr_health = pr_status_store[days_since_creation]['health']
+    pr_age_emoji = get_emoji_for_number(days_since_creation)
+
+    # if days since creation is less than pr stale limit, emojis shown from day 0 to day stale in reverse (positive
+    # emojis) else emojis from day of being stale till number of days (negative emojis)
     emoji_start = stale_pr_limit if pr_stale else days_since_creation
     emoji_end = days_since_creation + 1 if pr_stale else stale_pr_limit
     pr_emojis = []
 
-    for i in range(emoji_start, emoji_end):
-        pr_emojis.append(pr_status_store[i]['emoji'])
+    if single_emoji_mode:
+        pr_emojis.append(pr_status_store[days_since_creation]['emoji'])
+    else:
+        for i in range(emoji_start, emoji_end):
+            pr_emojis.append(pr_status_store[i]['emoji'])
 
     if not pr_stale:
         pr_emojis.reverse()
 
-    return '_Health_: %s %s' % (pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
+    return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
 
 
 def create_greetings_message(valid_prs):
@@ -65,7 +81,7 @@ def create_greetings_message(valid_prs):
     if prs_available:
         message_status = message_status % len(valid_prs)
 
-    username_mention = '@channel'
+    username_mention = '@%s' % slack_store['message_template']['user_mention']
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
@@ -74,7 +90,7 @@ def create_greetings_message(valid_prs):
         pr_url = pr['html_url']
         pr_labels = get_labels_info(pr)
         pr_status = get_pr_status_message(pr)
-        pr_message = '\n%s)  *%s* by %s\n\t_Labels_: %s %s\n\t%s\n\n' % (
+        pr_message = '\n%s)  *%s* by %s\n\t_Labels_: %s\n\t%s\n\t%s\n\n' % (
             i + 1, pr_title, pr_author, pr_labels, pr_status, pr_url)
         pr_message_body += pr_message
 
