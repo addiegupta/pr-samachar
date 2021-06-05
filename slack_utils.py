@@ -70,7 +70,7 @@ def get_day_count_for_pr_status(pr):
     return days_for_status
 
 
-def get_emoji_string_for_pr(pr):
+def get_emoji_string_for_pr(pr, single_mode=single_emoji_mode):
     pr_status_store = slack_store['pr_status']
 
     stale_pr_limit = int(slack_store['stale_pr_days'])
@@ -86,7 +86,7 @@ def get_emoji_string_for_pr(pr):
     emoji_end = days_for_status + 1 if pr_stale else stale_pr_limit
     pr_emojis = []
 
-    if single_emoji_mode:
+    if single_mode:
         pr_emojis.append(pr_status_store[days_for_status]['emoji'])
     else:
         for i in range(emoji_start, emoji_end):
@@ -219,7 +219,7 @@ def get_content_blocks(valid_prs, top_header_text=None):
         section['accessory'] = get_image_accessory(pr['user']['avatar_url'], pr_author)
 
         blocks.append(section)
-        emoji_string = get_emoji_string_for_pr(pr)
+        emoji_string = get_emoji_string_for_pr(pr, True)  # emoji in button can only support single emoji
         button_block = get_button_block('Open PR ' + emoji_string, pr_url)
         blocks.append(button_block)
         blocks.append(get_divider_block())
