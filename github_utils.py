@@ -29,6 +29,10 @@ def get_base_url():
     return 'https://api.github.com'
 
 
+def get_pull_details_url(repo, pr_num):
+    return get_base_url() + '/repos/' + get_full_repo(repo) + '/pulls/' + str(pr_num)
+
+
 def get_search_url():
     return get_base_url() + '/search/issues'
 
@@ -40,7 +44,20 @@ def fetch_prs_for_repo(repo):
     valid_prs = []
     if 'items' in r.json():
         valid_prs = r.json()['items']
+        for pr in valid_prs:
+            pr_num = pr['number']
+            r = get_pr_details_request(repo, pr_num)
+            data = r.json()
+            if data:
+                pr['additions'] = data['additions']
+                pr['deletions'] = data['deletions']
+                pr['changed_files'] = data['changed_files']
     return valid_prs
+
+
+def get_pr_details_request(repo, pr_num):
+    pull_details_url = get_pull_details_url(repo, pr_num)
+    return get_request(pull_details_url, github_auth_token)
 
 
 def get_prs_request(repo):

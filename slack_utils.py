@@ -121,6 +121,17 @@ def get_emoji_string_for_pr(pr, single_mode=single_emoji_mode):
     return ' '.join(emojify(emoji) for emoji in pr_emojis)
 
 
+def get_pr_changes_message(pr):
+    message = ''
+    if 'additions' in pr:
+        additions_string = '%s %s' % (emojify('green-plus'), str(pr['additions']))
+        deletion_string = '%s %s' % (emojify('red-minus'), str(pr['deletions']))
+        file_string = '%s %s' % (emojify('page_facing_up'), str(pr['changed_files']))
+        message += '_Changes_: %s  %s  %s' % (additions_string, deletion_string, file_string)
+
+    return message
+
+
 def get_pr_status_message(pr):
     pr_status_store = slack_store['pr_status']
 
@@ -150,8 +161,9 @@ def get_pr_header_text(pr, i):
 def get_pr_details_text(pr):
     pr_labels = get_labels_info(pr)
     pr_status = get_pr_status_message(pr)
-    return '\n\t_Labels_: %s\n\t%s' % (
-        pr_labels, pr_status)
+    pr_changes = get_pr_changes_message(pr)
+    return '\n\t_Labels_: %s\n\t%s\n\t%s' % (
+        pr_labels, pr_changes, pr_status)
 
 
 def get_pr_message_text(pr, i):
