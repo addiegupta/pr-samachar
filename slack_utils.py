@@ -14,6 +14,9 @@ date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 # To display only emoji for the day; else include all till stale limit
 single_emoji_mode = True
 
+# To display tally marks for the number of days: else display day count in emojis with each digit as an emoji
+day_tally_mode = True
+
 
 def get_base_url():
     return 'https://slack.com/api'
@@ -33,12 +36,32 @@ def emojify(emoji_key):
 
 
 def get_emoji_for_number(num):
+    if day_tally_mode:
+        emoji = get_tally_emoji_for_number(num)
+    else:
+        emoji = get_numeral_emoji_for_number(num)
+    return emoji
+
+
+def get_tally_emoji_for_number(num):
+    emojis = []
+    numeral_to_text_map = slack_store['numeral_to_text_map']
+    factor_five = num // 5
+    remainder = num % 5
+    for i in range(factor_five):
+        emojis.append(numeral_to_text_map[str(5)])
+    if remainder is not 0:
+        emojis.append(numeral_to_text_map[str(remainder)])
+    return ' '.join(emojify('tally-' + emoji) for emoji in emojis)
+
+
+def get_numeral_emoji_for_number(num):
     if num < 10:
         return emojify(slack_store['numeral_to_text_map'][str(num)])
     else:
         a = num // 10
         b = num % 10
-        return get_emoji_for_number(a) + get_emoji_for_number(b)
+        return get_numeral_emoji_for_number(a) + get_numeral_emoji_for_number(b)
 
 
 def get_labels_info(pr):
@@ -114,7 +137,7 @@ def get_pr_status_message(pr):
     else:
         emoji_string = get_emoji_string_for_pr(pr)
 
-    return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, emoji_string)
+    return '_Health_: %s %s %s' % (pr_health, emoji_string, pr_age_emoji)
 
 
 def get_pr_header_text(pr, i):
