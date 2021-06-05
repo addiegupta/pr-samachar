@@ -2,6 +2,10 @@ import json
 from datetime import datetime
 import os
 
+from network_utils import post_request
+
+slack_oauth_token = None
+
 dirname = os.path.dirname(__file__)
 slack_filename = os.path.join(dirname, 'slack_store.json')
 slack_store = json.load(open(slack_filename))
@@ -9,6 +13,11 @@ date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 
 # To display only emoji for the day; else include all till stale limit
 single_emoji_mode = True
+
+
+def set_slack_token(token):
+    global slack_oauth_token
+    slack_oauth_token = token
 
 
 def emojify(emoji_key):
@@ -97,3 +106,16 @@ def create_greetings_message(valid_prs):
         pr_message_body += pr_message
 
     return '\n'.join([salutation, message_status, username_mention, pr_message_body])
+
+
+def send_to_slack(message):
+    slack_url = 'https://slack.com/api/chat.postMessage'
+    body = {
+        'channel': 'C024U0MHSE4',
+        'text': message
+    }
+    post_request(slack_url, slack_oauth_token, body)
+
+
+def can_send_slack():
+    return slack_oauth_token is not None

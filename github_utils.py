@@ -3,9 +3,17 @@ from network_utils import get_request
 import json
 import os
 
+github_auth_token = 'invalid'
+
 dirname = os.path.dirname(__file__)
 github_filename = os.path.join(dirname, 'github_store.json')
 github_store = json.load(open(github_filename))
+
+
+def set_github_pat(token):
+    global github_auth_token
+    if token is not None:
+        github_auth_token = token
 
 
 # returns full repo name (organisation/repo)
@@ -41,4 +49,4 @@ def get_prs_request(repo, query_params={}):
         'per_page': 40
     }
 
-    return get_request(pulls_url, payload)
+    return get_request(pulls_url, github_auth_token, payload)
