@@ -54,31 +54,35 @@ def get_labels_info(pr):
     return ', '.join(pr_labels)
 
 
+def get_days_since_pr_creation(pr):
+    # date received from api is in utc
+    created_date = datetime.strptime(pr['created_at'], date_time_format)
+    date_now = datetime.utcnow()
+    return (date_now - created_date).days
+
+
 def get_pr_status_message(pr):
     pr_status_store = slack_store['pr_status']
 
     # obtain days since creation of this pr
-    # date received from api is in utc
     stale_pr_limit = int(slack_store['stale_pr_days'])
-    created_date = datetime.strptime(pr['created_at'], date_time_format)
-    date_now = datetime.utcnow()
-    days_since_creation = (date_now - created_date).days
+    days_since_creation = get_days_since_pr_creation(pr)
 
     # should not exceed max dict length of pr status
-    days_since_creation = min(days_since_creation, len(pr_status_store) - 1)
+    days_for_status = min(days_since_creation, len(pr_status_store) - 1)
 
     pr_stale = days_since_creation >= stale_pr_limit
-    pr_health = pr_status_store[days_since_creation]['health']
+    pr_health = pr_status_store[days_for_status]['health']
     pr_age_emoji = get_emoji_for_number(days_since_creation)
 
     # if days since creation is less than pr stale limit, emojis shown from day 0 to day stale in reverse (positive
     # emojis) else emojis from day of being stale till number of days (negative emojis)
-    emoji_start = stale_pr_limit if pr_stale else days_since_creation
-    emoji_end = days_since_creation + 1 if pr_stale else stale_pr_limit
+    emoji_start = stale_pr_limit if pr_stale else days_for_status
+    emoji_end = days_for_status + 1 if pr_stale else stale_pr_limit
     pr_emojis = []
 
     if single_emoji_mode:
-        pr_emojis.append(pr_status_store[days_since_creation]['emoji'])
+        pr_emojis.append(pr_status_store[days_for_status]['emoji'])
     else:
         for i in range(emoji_start, emoji_end):
             pr_emojis.append(pr_status_store[i]['emoji'])
@@ -89,8 +93,30 @@ def get_pr_status_message(pr):
     return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
 
 
-def create_reminder_message(valid_prs):
-    prs_available = len(valid_prs) > 0
+def get_pr_header_text(pr, i):
+    pr_title = pr['title']
+    pr_author = pr['user']['login']
+    return '\n%s) *%s* by %s' % (
+        i + 1, pr_title, pr_author)
+
+
+def get_pr_details_text(pr):
+    pr_labels = get_labels_info(pr)
+    pr_status = get_pr_status_message(pr)
+    return '\n\t_Labels_: %s\n\t%s' % (
+        pr_labels, pr_status)
+
+
+def get_pr_message_text(pr, i):
+    pr_header_text = get_pr_header_text(pr, i)
+    pr_details_text = get_pr_details_text(pr)
+    pr_url = pr['html_url']
+    return '%s%s\n\t%s\n\n' % (
+        pr_header_text, pr_details_text, pr_url)
+
+
+def get_top_header_text(prs):
+    prs_available = len(prs) > 0
     reviewers = ', '.join(slack_store['reviewers'].values())
 
     salutation = slack_store['message_template']['salutation'] % reviewers
@@ -98,26 +124,25 @@ def create_reminder_message(valid_prs):
     message_status = slack_store['message_template'][message_status_key]
 
     if prs_available:
-        message_status = message_status % len(valid_prs)
+        message_status = message_status % len(prs)
 
     mention_template = '@%s'
     if can_send_slack():
         mention_template = '<!%s>'
 
     username_mention = mention_template % slack_store['message_template']['user_mention']
+
+    return '\n'.join([salutation, message_status, username_mention])
+
+
+def create_reminder_message(valid_prs):
+    top_header_text = get_top_header_text(valid_prs)
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
-        pr_title = pr['title']
-        pr_author = pr['user']['login']
-        pr_url = pr['html_url']
-        pr_labels = get_labels_info(pr)
-        pr_status = get_pr_status_message(pr)
-        pr_message = '\n%s) *%s* by %s\n\t_Labels_: %s\n\t%s\n\t%s\n\n' % (
-            i + 1, pr_title, pr_author, pr_labels, pr_status, pr_url)
-        pr_message_body += pr_message
+        pr_message_body += get_pr_message_text(pr, i)
 
-    return '\n'.join([salutation, message_status, username_mention, pr_message_body])
+    return '\n'.join([top_header_text, pr_message_body])
 
 
 def send_to_slack(message):
