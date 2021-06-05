@@ -206,7 +206,7 @@ def get_divider_block():
     return {"type": "divider"}
 
 
-def get_button_element(text, url):
+def get_button_element(text, url, style='primary'):
     return {
         'type': 'button',
         'text': {
@@ -214,15 +214,15 @@ def get_button_element(text, url):
             'text': text
         },
         'url': url,
-        'style': 'primary'
+        'style': style
     }
 
 
-def get_button_block(text, url):
+def get_button_block(text, url, style='primary'):
     return {
         "type": "actions",
         'elements': [
-            get_button_element(text, url)
+            get_button_element(text, url, style)
         ]
     }
 
@@ -247,6 +247,8 @@ def get_content_blocks(valid_prs, top_header_text=None):
         blocks.append(button_block)
         blocks.append(get_divider_block())
 
+    dummy_merge_all_section = get_button_block('Merge All PRs', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'danger')
+    blocks.append(dummy_merge_all_section)
     return blocks
 
 
