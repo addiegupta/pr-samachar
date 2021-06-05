@@ -2,22 +2,8 @@
 import pyperclip
 import argparse
 
-from github_utils import get_prs_request, set_github_pat
+from github_utils import set_github_pat, fetch_prs_for_repo, get_repos
 from slack_utils import create_greetings_message, set_slack_token, send_to_slack, can_send_slack
-
-
-# currently config is not being passed, can be added later with
-# command line args support
-def fetch_valid_rmsv2_prs():
-
-    repo = 'sentieoweb'
-    print("\nFetching pull requests for: ", repo)
-    r = get_prs_request(repo)
-
-    valid_prs = []
-    if 'items' in r.json():
-        valid_prs = r.json()['items']
-    return valid_prs
 
 
 def main():
@@ -31,18 +17,20 @@ def main():
     set_github_pat(args.gpat)
     set_slack_token(args.slacktoken)
 
-    valid_prs = fetch_valid_rmsv2_prs()
-    greetings_message = create_greetings_message(valid_prs)
+    repos = get_repos()
+    for repo in repos:
+        valid_prs = fetch_prs_for_repo(repo)
+        reminder_message = create_greetings_message(valid_prs)
 
-    print("\nGreetings message is:\n",
-          greetings_message[:200] + '...' if len(greetings_message) > 202 else greetings_message)
+        print("\nReminder message is:\n",
+              reminder_message[:200] + '...' if len(reminder_message) > 202 else reminder_message)
 
-    if can_send_slack():
-        send_to_slack(greetings_message)
-        print("\nMessage has been sent to slack!")
-    else:
-        pyperclip.copy(greetings_message)
-        print("\nMessage has been copied to clipboard!")
+        if can_send_slack():
+            send_to_slack(reminder_message)
+            print("\nMessage has been sent to slack!")
+        else:
+            pyperclip.copy(reminder_message)
+            print("\nMessage has been copied to clipboard!")
 
 
 if __name__ == '__main__':

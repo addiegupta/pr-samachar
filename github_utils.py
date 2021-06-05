@@ -10,6 +10,10 @@ github_filename = os.path.join(dirname, 'github_store.json')
 github_store = json.load(open(github_filename))
 
 
+def get_repos():
+    return github_store['repos'].keys()
+
+
 def set_github_pat(token):
     global github_auth_token
     if token is not None:
@@ -27,6 +31,16 @@ def get_base_url():
 
 def get_search_url():
     return get_base_url() + '/search/issues'
+
+
+def fetch_prs_for_repo(repo):
+    print("\nFetching pull requests for: ", repo)
+    r = get_prs_request(repo)
+
+    valid_prs = []
+    if 'items' in r.json():
+        valid_prs = r.json()['items']
+    return valid_prs
 
 
 def get_prs_request(repo):
