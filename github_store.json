@@ -18,7 +18,7 @@
       "config": {
         "sort": "created",
         "order": "asc",
-        "per_page": 20
+        "per_page": 30
       }
     }
   }

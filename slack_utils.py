@@ -278,7 +278,21 @@ def send_to_slack(message, blocks):
             'text': message,  # fallback for notification etc.
             'blocks': str(blocks)
         }
-        post_request(slack_url, slack_oauth_token, body)
+        block_count = len(blocks)
+
+        # sending 5 prs or 15 blocks at a time to avoid content limit of slack api
+        if len(blocks) > 15:
+            i = 0
+            while block_count is not 0:
+                # count of blocks to be sent
+                count = min(15, len(blocks) - i)
+                required_blocks = blocks[i:i + count]
+                body['blocks'] = str(required_blocks)
+                i += count
+                block_count -= count
+                post_request(slack_url, slack_oauth_token, body)
+        else:
+            post_request(slack_url, slack_oauth_token, body)
 
 
 def can_send_slack():
