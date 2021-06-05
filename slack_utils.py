@@ -15,6 +15,14 @@ date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 single_emoji_mode = True
 
 
+def get_base_url():
+    return 'https://slack.com/api'
+
+
+def get_post_message_url():
+    return get_base_url() + '/chat.postMessage'
+
+
 def set_slack_token(token):
     global slack_oauth_token
     slack_oauth_token = token
@@ -109,12 +117,14 @@ def create_greetings_message(valid_prs):
 
 
 def send_to_slack(message):
-    slack_url = 'https://slack.com/api/chat.postMessage'
-    body = {
-        'channel': 'C024U0MHSE4',
-        'text': message
-    }
-    post_request(slack_url, slack_oauth_token, body)
+    slack_url = get_post_message_url()
+    for channel_name in slack_store['channels']:
+        channel_id = slack_store['channels'][channel_name]
+        body = {
+            'channel': channel_id,
+            'text': message
+        }
+        post_request(slack_url, slack_oauth_token, body)
 
 
 def can_send_slack():

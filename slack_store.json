@@ -4,6 +4,10 @@
     "ayudh": "Ayudh Gupta"
   },
   "stale_pr_days": "3",
+  "channels": {
+    "prs": "C024U0MHSE4",
+    "general": "C024U0M6VAL"
+  },
   "message_template": {
     "salutation": "Namaste %s!",
     "prs_available": "Here are the %s open pull requests worth looking into today",
