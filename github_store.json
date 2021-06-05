@@ -1,12 +1,25 @@
 {
   "organisation": "usernames",
   "repos": {
-    "sentieo_web": "sentieoweb"
-  },
-  "labels": {
-    "rmsv2": "rmsv2",
-    "dont_merge": "Don't Merge",
-    "changes_requested": "Requested",
-    "changes_made": "Changes made"
+    "sentieoweb": {
+      "only_prs": true,
+      "only_open": true,
+      "labels": [
+        "rmsv2"
+      ],
+      "excluded_labels": [
+        "Don't Merge",
+        "Requested"
+      ],
+      "other_labels": [
+        "Changes made"
+      ],
+      "draft": "false",
+      "config": {
+        "sort": "created",
+        "order": "asc",
+        "per_page": 40
+      }
+    }
   }
 }

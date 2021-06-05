@@ -8,18 +8,11 @@ from slack_utils import create_greetings_message, set_slack_token, send_to_slack
 
 # currently config is not being passed, can be added later with
 # command line args support
-def fetch_valid_rmsv2_prs(config=None):
-    if config is None:
-        config = {
-            'label': ['rmsv2'],
-            '-label': ['dont_merge', 'changes_requested'],
-            'draft': 'false'
-        }
+def fetch_valid_rmsv2_prs():
 
-    repo = 'sentieo_web'
+    repo = 'sentieoweb'
     print("\nFetching pull requests for: ", repo)
-    print("\nPR criteria: ", config)
-    r = get_prs_request(repo, config)
+    r = get_prs_request(repo)
 
     valid_prs = []
     if 'items' in r.json():
@@ -36,9 +29,7 @@ def main():
 
     # set GitHub personal access token as auth token
     set_github_pat(args.gpat)
-
-    if not args.slacktoken is None:
-        set_slack_token(args.slacktoken)
+    set_slack_token(args.slacktoken)
 
     valid_prs = fetch_valid_rmsv2_prs()
     greetings_message = create_greetings_message(valid_prs)

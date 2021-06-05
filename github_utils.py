@@ -18,7 +18,7 @@ def set_github_pat(token):
 
 # returns full repo name (organisation/repo)
 def get_full_repo(repo):
-    return github_store['organisation'] + '/' + github_store['repos'][repo]
+    return github_store['organisation'] + '/' + repo
 
 
 def get_base_url():
@@ -29,24 +29,32 @@ def get_search_url():
     return get_base_url() + '/search/issues'
 
 
-def get_prs_request(repo, query_params={}):
+def get_prs_request(repo):
+    query_params = {}
     pulls_url = get_search_url()
-    query_params['is'] = 'pr'
-    query_params['is'] = 'open'
+    repo_config = github_store['repos'][repo]
+
+    if repo_config['only_prs']:
+        query_params['is'] = []
+        query_params['is'].append('pr')
+
+    if repo_config['only_open']:
+        query_params['is'].append('open')
+
+    if 'draft' in repo_config:
+        query_params['draft'] = repo_config['draft']
+
     query_params['repo'] = get_full_repo(repo)
 
-    label_keys = ['label', '-label']
-    for key in label_keys:
-        if key in query_params:
-            for i, v in enumerate(query_params[key]):
-                query_params[key][i] = github_store['labels'][v]
+    label_keys = {'labels': 'label', 'excluded_labels': '-label'}
+    for json_key, query_key in label_keys.items():
+        if json_key in repo_config:
+            query_params[query_key] = []
+            for i in range(len(repo_config[json_key])):
+                query_params[query_key].append(repo_config[json_key][i])
 
-    # by default per_page is 30, max is 100
-    payload = {
-        'q': query_params_to_string(query_params),
-        'sort': 'created',
-        'order': 'asc',
-        'per_page': 40
-    }
+    print("\nPR criteria: ", query_params)
+    payload = repo_config['config']
+    payload['q'] = query_params_to_string(query_params)
 
     return get_request(pulls_url, github_auth_token, payload)

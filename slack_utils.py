@@ -109,7 +109,7 @@ def create_greetings_message(valid_prs):
         pr_url = pr['html_url']
         pr_labels = get_labels_info(pr)
         pr_status = get_pr_status_message(pr)
-        pr_message = '\n%s)  *%s* by %s\n\t_Labels_: %s\n\t%s\n\t%s\n\n' % (
+        pr_message = '\n%s) *%s* by %s\n\t_Labels_: %s\n\t%s\n\t%s\n\n' % (
             i + 1, pr_title, pr_author, pr_labels, pr_status, pr_url)
         pr_message_body += pr_message
 
