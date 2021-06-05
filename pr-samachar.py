@@ -3,7 +3,8 @@ import pyperclip
 import argparse
 
 from github_utils import set_github_pat, fetch_prs_for_repo, get_repos
-from slack_utils import create_reminder_message, set_slack_token, send_to_slack, can_send_slack
+from slack_utils import create_reminder_message, set_slack_token, send_to_slack, can_send_slack, \
+    create_reminder_message_for_slack
 
 
 def main():
@@ -20,15 +21,17 @@ def main():
     repos = get_repos()
     for repo in repos:
         valid_prs = fetch_prs_for_repo(repo)
-        reminder_message = create_reminder_message(valid_prs)
-
-        print("\nReminder message is:\n",
-              reminder_message[:200] + '...' if len(reminder_message) > 202 else reminder_message)
 
         if can_send_slack():
-            send_to_slack(reminder_message)
+            reminder_text, reminder_blocks = create_reminder_message_for_slack(valid_prs)
+            send_to_slack(reminder_text, reminder_blocks)
             print("\nMessage has been sent to slack!")
+
         else:
+            reminder_message = create_reminder_message(valid_prs)
+
+            print("\nReminder message is:\n",
+                  reminder_message[:200] + '...' if len(reminder_message) > 202 else reminder_message)
             pyperclip.copy(reminder_message)
             print("\nMessage has been copied to clipboard!")
 

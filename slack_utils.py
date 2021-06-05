@@ -54,6 +54,7 @@ def get_labels_info(pr):
     return ', '.join(pr_labels)
 
 
+# obtain days since creation of this pr
 def get_days_since_pr_creation(pr):
     # date received from api is in utc
     created_date = datetime.strptime(pr['created_at'], date_time_format)
@@ -61,19 +62,23 @@ def get_days_since_pr_creation(pr):
     return (date_now - created_date).days
 
 
-def get_pr_status_message(pr):
-    pr_status_store = slack_store['pr_status']
-
-    # obtain days since creation of this pr
-    stale_pr_limit = int(slack_store['stale_pr_days'])
+def get_day_count_for_pr_status(pr):
     days_since_creation = get_days_since_pr_creation(pr)
 
     # should not exceed max dict length of pr status
-    days_for_status = min(days_since_creation, len(pr_status_store) - 1)
+    days_for_status = min(days_since_creation, len(slack_store['pr_status']) - 1)
+    return days_for_status
+
+
+def get_emoji_string_for_pr(pr):
+    pr_status_store = slack_store['pr_status']
+
+    stale_pr_limit = int(slack_store['stale_pr_days'])
+    days_since_creation = get_days_since_pr_creation(pr)
+
+    days_for_status = get_day_count_for_pr_status(pr)
 
     pr_stale = days_since_creation >= stale_pr_limit
-    pr_health = pr_status_store[days_for_status]['health']
-    pr_age_emoji = get_emoji_for_number(days_since_creation)
 
     # if days since creation is less than pr stale limit, emojis shown from day 0 to day stale in reverse (positive
     # emojis) else emojis from day of being stale till number of days (negative emojis)
@@ -90,7 +95,26 @@ def get_pr_status_message(pr):
     if not pr_stale:
         pr_emojis.reverse()
 
-    return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
+    return ' '.join(emojify(emoji) for emoji in pr_emojis)
+
+
+def get_pr_status_message(pr):
+    pr_status_store = slack_store['pr_status']
+
+    days_since_creation = get_days_since_pr_creation(pr)
+
+    days_for_status = get_day_count_for_pr_status(pr)
+
+    pr_health = pr_status_store[days_for_status]['health']
+    pr_age_emoji = get_emoji_for_number(days_since_creation)
+
+    if can_send_slack():
+        # ignore emoji for slack block message, will be added to button
+        emoji_string = ''
+    else:
+        emoji_string = get_emoji_string_for_pr(pr)
+
+    return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, emoji_string)
 
 
 def get_pr_header_text(pr, i):
@@ -110,9 +134,8 @@ def get_pr_details_text(pr):
 def get_pr_message_text(pr, i):
     pr_header_text = get_pr_header_text(pr, i)
     pr_details_text = get_pr_details_text(pr)
-    pr_url = pr['html_url']
-    return '%s%s\n\t%s\n\n' % (
-        pr_header_text, pr_details_text, pr_url)
+
+    return '%s%s\n' % (pr_header_text, pr_details_text)
 
 
 def get_top_header_text(prs):
@@ -135,23 +158,102 @@ def get_top_header_text(prs):
     return '\n'.join([salutation, message_status, username_mention])
 
 
+def get_section_block():
+    return {"type": "section"}
+
+
+def get_text_section(text):
+    section = get_section_block()
+    section['text'] = {
+        "type": 'mrkdwn',
+        "text": text
+    }
+    return section
+
+
+def get_image_accessory(url, alt_text):
+    return {
+        "type": "image",
+        "image_url": url,
+        "alt_text": alt_text
+    }
+
+
+def get_divider_block():
+    return {"type": "divider"}
+
+
+def get_button_element(text, url):
+    return {
+        'type': 'button',
+        'text': {
+            'type': 'plain_text',
+            'text': text
+        },
+        'url': url,
+        'style': 'primary'
+    }
+
+
+def get_button_block(text, url):
+    return {
+        "type": "actions",
+        'elements': [
+            get_button_element(text, url)
+        ]
+    }
+
+
+def get_content_blocks(valid_prs, top_header_text=None):
+    blocks = []
+    if top_header_text:
+        blocks.append(get_text_section(top_header_text))
+
+    for i, pr in enumerate(valid_prs):
+        pr_url = pr['html_url']
+        pr_author = pr['user']['login']
+        pr_message = get_pr_message_text(pr, i)
+
+        section = get_text_section(pr_message)
+
+        section['accessory'] = get_image_accessory(pr['user']['avatar_url'], pr_author)
+
+        blocks.append(section)
+        emoji_string = get_emoji_string_for_pr(pr)
+        button_block = get_button_block('Open PR ' + emoji_string, pr_url)
+        blocks.append(button_block)
+        blocks.append(get_divider_block())
+
+    return blocks
+
+
 def create_reminder_message(valid_prs):
     top_header_text = get_top_header_text(valid_prs)
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
-        pr_message_body += get_pr_message_text(pr, i)
+        pr_message = get_pr_message_text(pr, i)
+        pr_url = pr['html_url']
+        pr_message_body += '%s\t%s\n\n' % (pr_message, pr_url)
 
     return '\n'.join([top_header_text, pr_message_body])
 
 
-def send_to_slack(message):
+def create_reminder_message_for_slack(valid_prs):
+    top_header_text = get_top_header_text(valid_prs)
+    content_blocks = get_content_blocks(valid_prs, top_header_text)
+
+    return top_header_text, content_blocks
+
+
+def send_to_slack(message, blocks):
     slack_url = get_post_message_url()
     for channel_name in slack_store['channels']:
         channel_id = slack_store['channels'][channel_name]
         body = {
             'channel': channel_id,
-            'text': message
+            'text': message,  # fallback for notification etc.
+            'blocks': str(blocks)
         }
         post_request(slack_url, slack_oauth_token, body)
 
