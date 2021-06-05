@@ -48,8 +48,8 @@ def get_prs_request(repo):
     pulls_url = get_search_url()
     repo_config = github_store['repos'][repo]
 
+    query_params['is'] = []
     if repo_config['only_prs']:
-        query_params['is'] = []
         query_params['is'].append('pr')
 
     if repo_config['only_open']:

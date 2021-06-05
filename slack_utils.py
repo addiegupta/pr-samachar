@@ -89,7 +89,7 @@ def get_pr_status_message(pr):
     return '_Health_: %s %s %s' % (pr_age_emoji, pr_health, ' '.join(emojify(emoji) for emoji in pr_emojis))
 
 
-def create_greetings_message(valid_prs):
+def create_reminder_message(valid_prs):
     prs_available = len(valid_prs) > 0
     reviewers = ', '.join(slack_store['reviewers'].values())
 
@@ -100,7 +100,11 @@ def create_greetings_message(valid_prs):
     if prs_available:
         message_status = message_status % len(valid_prs)
 
-    username_mention = '@%s' % slack_store['message_template']['user_mention']
+    mention_template = '@%s'
+    if can_send_slack():
+        mention_template = '<!%s>'
+
+    username_mention = mention_template % slack_store['message_template']['user_mention']
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
