@@ -74,7 +74,7 @@ def get_labels_info(pr):
 
         pr_labels.append(pr_label)
 
-    return ', '.join(pr_labels)
+    return '_Labels_: ' + ', '.join(pr_labels)
 
 
 # obtain days since creation of this pr
@@ -154,7 +154,7 @@ def get_pr_status_message(pr):
 def get_pr_header_text(pr, i):
     pr_title = pr['title']
     pr_author = pr['user']['login']
-    return '\n%s) *%s* by %s' % (
+    return '\n%s) *%s* by %s\n' % (
         i + 1, pr_title, pr_author)
 
 
@@ -162,7 +162,7 @@ def get_pr_details_text(pr):
     pr_labels = get_labels_info(pr)
     pr_status = get_pr_status_message(pr)
     pr_changes = get_pr_changes_message(pr)
-    return '\n\t_Labels_: %s\n\t%s\n\t%s' % (
+    return '\n\t%s\n\t%s\n\t%s' % (
         pr_labels, pr_changes, pr_status)
 
 
@@ -195,6 +195,17 @@ def get_top_header_text(prs):
 
 def get_section_block():
     return {"type": "section"}
+
+
+def get_fields_section(fields_list):
+    section = get_section_block()
+    section['fields'] = []
+    for field in fields_list:
+        section['fields'].append({
+            "type": "mrkdwn",
+            "text": field
+        })
+    return section
 
 
 def get_text_section(text):
@@ -247,6 +258,14 @@ def get_content_blocks(valid_prs, top_header_text=None):
     for i, pr in enumerate(valid_prs):
         pr_url = pr['html_url']
         pr_author = pr['user']['login']
+
+        # not using field section for now as long text wraps to next line, didnt look good
+        # pr_header = get_pr_header_text(pr, i)
+        # pr_changes = get_pr_changes_message(pr)
+        # pr_status = get_pr_status_message(pr)
+        # pr_labels = get_labels_info(pr)
+        # field_section = get_fields_section([pr_labels, pr_changes, pr_status])
+
         pr_message = get_pr_message_text(pr, i)
 
         section = get_text_section(pr_message)
