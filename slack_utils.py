@@ -1,7 +1,7 @@
 import json
-from datetime import datetime
 import os
 
+from date_utils import get_date_from_string, get_utc_now, get_days_diff, get_hours_diff, get_string_from_date
 from network_utils import post_request
 
 slack_oauth_token = None
@@ -9,7 +9,6 @@ slack_oauth_token = None
 dirname = os.path.dirname(__file__)
 slack_filename = os.path.join(dirname, 'slack_store.json')
 slack_store = json.load(open(slack_filename))
-date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 
 # To display only emoji for the day; else include all till stale limit
 single_emoji_mode = True
@@ -80,9 +79,9 @@ def get_labels_info(pr):
 # obtain days since creation of this pr
 def get_days_since_pr_creation(pr):
     # date received from api is in utc
-    created_date = datetime.strptime(pr['created_at'], date_time_format)
-    date_now = datetime.utcnow()
-    return (date_now - created_date).days
+    created_date = get_date_from_string(pr['created_at'])
+    date_now = get_utc_now()
+    return get_days_diff(date_now, created_date)
 
 
 def get_day_count_for_pr_status(pr):
@@ -302,19 +301,49 @@ def create_reminder_message_for_slack(valid_prs):
     return top_header_text, content_blocks
 
 
-def send_to_slack(message, blocks):
+def create_eod_report_message(prs_dict):
+    # TODO: break into separate functions
+
+    eod_file_name = os.path.join(dirname, 'last_eod.txt')
+    eod_file = open(eod_file_name, 'r')
+
+    last_eod_string = str(eod_file.read())
+    eod_file.close()
+
+    # write time of now for next eod execution
+    eod_file = open(eod_file_name, 'w')
+    eod_file.write(get_string_from_date(get_utc_now()))
+    eod_file.close()
+
+    time_since_last_report = get_date_from_string(last_eod_string)
+
+    open_count = len(prs_dict['created'])
+    merge_count = len(prs_dict['merged'])
+
+    time_now = get_utc_now()
+    hours = get_hours_diff(time_now, time_since_last_report)
+
+    # TODO: Move to config
+    report_message = 'In the last %s hours, %s PRs have been opened and %s PRs have been merged! Great success!' % (
+        str(hours), open_count, merge_count)
+
+    return report_message
+
+
+def send_to_slack(message, blocks=[]):
     slack_url = get_post_message_url()
     for channel_name in slack_store['channels']:
         channel_id = slack_store['channels'][channel_name]
         body = {
             'channel': channel_id,
-            'text': message,  # fallback for notification etc.
-            'blocks': str(blocks)
+            'text': message,  # fallback for notification / or main param when blocks are not present
         }
         block_count = len(blocks)
+        if block_count > 0:
+            body['blocks'] = str(blocks)
 
         # sending 5 prs or 15 blocks at a time to avoid content limit of slack api
-        if len(blocks) > 15:
+        if block_count > 15:
             i = 0
             while block_count is not 0:
                 # count of blocks to be sent

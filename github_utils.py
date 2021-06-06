@@ -1,7 +1,9 @@
-from helper_utils import query_params_to_string
-from network_utils import get_request
 import json
 import os
+
+from date_utils import  get_date_from_string, get_string_from_date
+from helper_utils import query_params_to_string
+from network_utils import get_request
 
 github_auth_token = 'invalid'
 
@@ -37,6 +39,17 @@ def get_search_url():
     return get_base_url() + '/search/issues'
 
 
+def fetch_eod_prs_for_repo(repo):
+    date_qualifiers = ['created', 'merged']
+    results = {}
+    for date_qualifier in date_qualifiers:
+        r = get_eod_prs_request(repo, date_qualifier)
+        if 'items' in r.json():
+            results[date_qualifier] = r.json()['items']
+
+    return results
+
+
 def fetch_prs_for_repo(repo):
     print("\nFetching pull requests for: ", repo)
     r = get_prs_request(repo)
@@ -60,20 +73,18 @@ def get_pr_details_request(repo, pr_num):
     return get_request(pull_details_url, github_auth_token)
 
 
-def get_prs_request(repo):
-    query_params = {}
+def get_prs_request(repo, query_params={}, is_eod=False):
     pulls_url = get_search_url()
     repo_config = github_store['repos'][repo]
 
-    query_params['is'] = []
-    if repo_config['only_prs']:
-        query_params['is'].append('pr')
+    if is_eod:
+        repo_config = repo_config['eod']
 
-    if repo_config['only_open']:
-        query_params['is'].append('open')
+    qualifiers = ['state', 'draft', 'type']
 
-    if 'draft' in repo_config:
-        query_params['draft'] = repo_config['draft']
+    for qualifier in qualifiers:
+        if qualifier in repo_config:
+            query_params[qualifier] = repo_config[qualifier]
 
     query_params['repo'] = get_full_repo(repo)
 
@@ -89,3 +100,21 @@ def get_prs_request(repo):
     payload['q'] = query_params_to_string(query_params)
 
     return get_request(pulls_url, github_auth_token, payload)
+
+
+def get_eod_prs_request(repo, date_qualifier):
+    query_params = {}
+
+    #TODO unify file logic with slack_utils
+    eod_file_name = os.path.join(dirname, 'last_eod.txt')
+    eod_file = open(eod_file_name, 'r')
+
+    last_eod_date = str(eod_file.read())
+    eod_file.close()
+
+    time_since_last_report = get_date_from_string(last_eod_date)
+
+    date_string = get_string_from_date(time_since_last_report)
+    query_params[date_qualifier] = '>' + date_string
+
+    return get_prs_request(repo, query_params, True)

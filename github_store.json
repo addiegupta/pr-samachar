@@ -2,8 +2,8 @@
   "organisation": "usernames",
   "repos": {
     "sentieoweb": {
-      "only_prs": true,
-      "only_open": true,
+      "type": "pr",
+      "state": "open",
       "labels": [
         "rmsv2"
       ],
@@ -19,6 +19,19 @@
         "sort": "created",
         "order": "asc",
         "per_page": 30
+      },
+      "eod": {
+        "type": "pr",
+        "labels": [
+          "rmsv2"
+        ],
+        "excluded_labels": [
+        ],
+        "config": {
+          "sort": "created",
+          "order": "desc",
+          "per_page": 30
+        }
       }
     }
   }
