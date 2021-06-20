@@ -150,7 +150,7 @@ def get_pr_status_message(pr):
     else:
         emoji_string = get_emoji_string_for_pr(pr)
 
-    return '_Health_: %s %s %s' % (pr_health, emoji_string, pr_age_emoji)
+    return '_Health_: %s days; %s %s %s' % (str(days_since_creation), pr_health, emoji_string, pr_age_emoji)
 
 
 def get_pr_header_text(pr, i):
