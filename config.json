@@ -1,9 +1,9 @@
 {
-  "reviewers": {
+  "all_reviewers": {
     "atul_kumar": "Atul Kumar",
     "ayudh": "Ayudh Gupta"
   },
-  "channels": {
+  "all_channels": {
     "rmsv2-pr-samachar": "C023H7UTHFU"
   },
   "organisation": "usernames",
@@ -36,7 +36,14 @@
           "order": "desc",
           "per_page": 30
         }
-      }
+      },
+      "reviewers": [
+        "atul_kumar",
+        "ayudh"
+      ],
+      "channels": [
+        "rmsv2-pr-samachar"
+      ]
     }
   }
 }

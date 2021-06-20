@@ -1,8 +1,7 @@
 import json
 import os
 
-from date_utils import get_date_from_string, get_string_from_date
-from file_utils import get_last_eod_script_date
+from date_utils import get_string_from_date
 from helper_utils import query_params_to_string
 from network_utils import get_request
 
@@ -40,11 +39,13 @@ def get_search_url():
     return get_base_url() + '/search/issues'
 
 
-def fetch_eod_prs_for_repo(repo):
+def fetch_eod_prs_for_repo(repo, last_eod_date):
     date_qualifiers = ['created', 'merged']
     results = {}
     for date_qualifier in date_qualifiers:
-        r = get_eod_prs_request(repo, date_qualifier)
+        r = get_eod_prs_request(repo, date_qualifier, last_eod_date)
+        if r is None:
+            return None
         if 'items' in r.json():
             results[date_qualifier] = r.json()['items']
 
@@ -79,6 +80,8 @@ def get_prs_request(repo, query_params={}, is_eod=False):
     repo_config = config_store['repos'][repo]
 
     if is_eod:
+        if 'eod' not in repo_config:
+            return None
         repo_config = repo_config['eod']
 
     qualifiers = ['state', 'draft', 'type']
@@ -103,14 +106,10 @@ def get_prs_request(repo, query_params={}, is_eod=False):
     return get_request(pulls_url, github_auth_token, payload)
 
 
-def get_eod_prs_request(repo, date_qualifier):
+def get_eod_prs_request(repo, date_qualifier, last_eod_date):
     query_params = {}
 
-    last_eod_date = get_last_eod_script_date()
-
-    time_since_last_report = get_date_from_string(last_eod_date)
-
-    date_string = get_string_from_date(time_since_last_report)
+    date_string = get_string_from_date(last_eod_date)
     query_params[date_qualifier] = '>' + date_string
 
     return get_prs_request(repo, query_params, True)

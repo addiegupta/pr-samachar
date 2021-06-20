@@ -1,8 +1,7 @@
 import json
 import os
 
-from date_utils import get_date_from_string, get_utc_now, get_days_diff, get_hours_diff, get_string_from_date
-from file_utils import get_last_eod_script_date, write_to_eod_file
+from date_utils import get_date_from_string, get_utc_now, get_days_diff, get_hours_diff
 from network_utils import post_request
 
 slack_oauth_token = None
@@ -176,9 +175,12 @@ def get_pr_message_text(pr, i):
     return '%s%s\n' % (pr_header_text, pr_details_text)
 
 
-def get_top_header_text(prs):
+def get_top_header_text(prs, repo):
     prs_available = len(prs) > 0
-    reviewers = ', '.join(config_store['reviewers'].values())
+
+    # get full names of reviewers for this repo
+    all_reviewers = config_store['all_reviewers']
+    reviewers = ', '.join(all_reviewers[reviewer] for reviewer in config_store['repos'][repo]['reviewers'])
 
     salutation = slack_store['message_template']['salutation'] % reviewers
     message_status_key = 'prs_available' if prs_available else 'prs_not_available'
@@ -286,8 +288,8 @@ def get_content_blocks(valid_prs, top_header_text=None):
     return blocks
 
 
-def create_reminder_message(valid_prs):
-    top_header_text = get_top_header_text(valid_prs)
+def create_reminder_message(valid_prs, repo):
+    top_header_text = get_top_header_text(valid_prs, repo)
     pr_message_body = ''
 
     for i, pr in enumerate(valid_prs):
@@ -298,26 +300,19 @@ def create_reminder_message(valid_prs):
     return '\n'.join([top_header_text, pr_message_body])
 
 
-def create_reminder_message_for_slack(valid_prs):
-    top_header_text = get_top_header_text(valid_prs)
+def create_reminder_message_for_slack(valid_prs, repo):
+    top_header_text = get_top_header_text(valid_prs, repo)
     content_blocks = get_content_blocks(valid_prs, top_header_text)
 
     return top_header_text, content_blocks
 
 
-def create_eod_report_message(prs_dict):
-    last_eod_string = get_last_eod_script_date()
-
-    # write time of now for next eod execution
-    write_to_eod_file(get_string_from_date(get_utc_now()))
-
-    time_since_last_report = get_date_from_string(last_eod_string)
-
+def create_eod_report_message(prs_dict, last_eod_date):
     open_count = len(prs_dict['created'])
     merge_count = len(prs_dict['merged'])
 
     time_now = get_utc_now()
-    hours = get_hours_diff(time_now, time_since_last_report)
+    hours = get_hours_diff(time_now, last_eod_date)
 
     report_message = slack_store['message_template']['eod_message'] % (
         str(hours), open_count, merge_count)
@@ -325,10 +320,12 @@ def create_eod_report_message(prs_dict):
     return report_message
 
 
-def send_to_slack(message, blocks=[]):
+def send_to_slack(message, repo, blocks=[]):
     slack_url = get_post_message_url()
-    for channel_name in config_store['channels']:
-        channel_id = config_store['channels'][channel_name]
+    all_channels = config_store['all_channels']
+
+    for channel_name in config_store['repos'][repo]['channels']:
+        channel_id = all_channels[channel_name]
         body = {
             'channel': channel_id,
             'text': message,  # fallback for notification / or main param when blocks are not present
