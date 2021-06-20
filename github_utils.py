@@ -1,7 +1,8 @@
 import json
 import os
 
-from date_utils import  get_date_from_string, get_string_from_date
+from date_utils import get_date_from_string, get_string_from_date
+from file_utils import get_last_eod_script_date
 from helper_utils import query_params_to_string
 from network_utils import get_request
 
@@ -105,12 +106,7 @@ def get_prs_request(repo, query_params={}, is_eod=False):
 def get_eod_prs_request(repo, date_qualifier):
     query_params = {}
 
-    #TODO unify file logic with slack_utils
-    eod_file_name = os.path.join(dirname, 'last_eod.txt')
-    eod_file = open(eod_file_name, 'r')
-
-    last_eod_date = str(eod_file.read())
-    eod_file.close()
+    last_eod_date = get_last_eod_script_date()
 
     time_since_last_report = get_date_from_string(last_eod_date)
 

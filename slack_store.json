@@ -3,7 +3,6 @@
     "atul_kumar": "Atul Kumar",
     "ayudh": "Ayudh Gupta"
   },
-  "stale_pr_days": "3",
   "channels": {
     "rmsv2-pr-samachar": "C023H7UTHFU"
   },
@@ -11,16 +10,8 @@
     "salutation": "Namaste %s!",
     "prs_available": "Here are the %s open pull requests worth looking into today",
     "prs_not_available": "Looks like there are no open pull requests!",
-    "user_mention": "channel"
-  },
-  "label_emoji": {
-    "95D4FA": "large_blue_circle",
-    "46B275": "large_green_circle",
-    "d4c5f9": "large_purple_circle",
-    "d73a4a": "red_circle",
-    "d93f0b": "red_circle",
-    "fbca04": "large_yellow_circle",
-    "a2eeef": "large_blue_circle"
+    "user_mention": "channel",
+    "eod_message": "In the last %s hours, %s PRs have been opened and %s PRs have been merged! Great success!"
   },
   "pr_status": [
     {
@@ -112,6 +103,16 @@
       "emoji": "newsman"
     }
   ],
+  "stale_pr_days": "3",
+  "label_emoji": {
+    "95D4FA": "large_blue_circle",
+    "46B275": "large_green_circle",
+    "d4c5f9": "large_purple_circle",
+    "d73a4a": "red_circle",
+    "d93f0b": "red_circle",
+    "fbca04": "large_yellow_circle",
+    "a2eeef": "large_blue_circle"
+  },
   "numeral_to_text_map": {
     "0": "zero",
     "1": "one",

@@ -2,6 +2,7 @@ import json
 import os
 
 from date_utils import get_date_from_string, get_utc_now, get_days_diff, get_hours_diff, get_string_from_date
+from file_utils import get_last_eod_script_date, write_to_eod_file
 from network_utils import post_request
 
 slack_oauth_token = None
@@ -302,18 +303,10 @@ def create_reminder_message_for_slack(valid_prs):
 
 
 def create_eod_report_message(prs_dict):
-    # TODO: break into separate functions
-
-    eod_file_name = os.path.join(dirname, 'last_eod.txt')
-    eod_file = open(eod_file_name, 'r')
-
-    last_eod_string = str(eod_file.read())
-    eod_file.close()
+    last_eod_string = get_last_eod_script_date()
 
     # write time of now for next eod execution
-    eod_file = open(eod_file_name, 'w')
-    eod_file.write(get_string_from_date(get_utc_now()))
-    eod_file.close()
+    write_to_eod_file(get_string_from_date(get_utc_now()))
 
     time_since_last_report = get_date_from_string(last_eod_string)
 
@@ -323,8 +316,7 @@ def create_eod_report_message(prs_dict):
     time_now = get_utc_now()
     hours = get_hours_diff(time_now, time_since_last_report)
 
-    # TODO: Move to config
-    report_message = 'In the last %s hours, %s PRs have been opened and %s PRs have been merged! Great success!' % (
+    report_message = slack_store['message_template']['eod_message'] % (
         str(hours), open_count, merge_count)
 
     return report_message
