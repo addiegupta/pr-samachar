@@ -36,6 +36,7 @@ If slack token is not provided, a slightly different message layout (without use
   "organisation": "usernames",
   "repos": {
     "sentieoweb": {
+      // all params except 'config' are optional inside this block
       "type": "pr",
       "state": "open",
       "labels": [
