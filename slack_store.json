@@ -20,10 +20,6 @@
       "emoji": "nice"
     },
     {
-      "health": "Hmmm",
-      "emoji": "slightly_frowning_face"
-    },
-    {
       "health": "Surely not that bad",
       "emoji": "sad_pepe"
     },
@@ -52,11 +48,15 @@
       "emoji": "see_no_evil"
     },
     {
+      "health": "Are we on a break?",
+      "emoji": "slightly_frowning_face"
+    },
+    {
       "health": "Nothing matters anyway",
       "emoji": "rick"
     },
     {
-      "health": "Why",
+      "health": "Ye hum hai, ye humare commits hain aur ye merge nahi horahe hain",
       "emoji": "frustrated"
     },
     {
@@ -84,12 +84,20 @@
       "emoji": "rajpal"
     },
     {
-      "health": "Please",
+      "health": "Itna life kharaab hogaya hai",
       "emoji": "harmonium"
+    },
+    {
+      "health": "Ab toh keshav sir hi merge karwayenge",
+      "emoji": "sob"
     },
     {
       "health": "Life has no meaning",
       "emoji": "parachuteman"
+    },
+    {
+      "health": "Anurag sir please help",
+      "emoji": "sos"
     },
     {
       "health": "Release day pe kuch ho hi jayega",
