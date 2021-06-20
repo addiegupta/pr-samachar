@@ -9,12 +9,12 @@ from network_utils import get_request
 github_auth_token = 'invalid'
 
 dirname = os.path.dirname(__file__)
-github_filename = os.path.join(dirname, 'github_store.json')
-github_store = json.load(open(github_filename))
+config_filename = os.path.join(dirname, 'config.json')
+config_store = json.load(open(config_filename))
 
 
 def get_repos():
-    return github_store['repos'].keys()
+    return config_store['repos'].keys()
 
 
 def set_github_pat(token):
@@ -25,7 +25,7 @@ def set_github_pat(token):
 
 # returns full repo name (organisation/repo)
 def get_full_repo(repo):
-    return github_store['organisation'] + '/' + repo
+    return config_store['organisation'] + '/' + repo
 
 
 def get_base_url():
@@ -76,7 +76,7 @@ def get_pr_details_request(repo, pr_num):
 
 def get_prs_request(repo, query_params={}, is_eod=False):
     pulls_url = get_search_url()
-    repo_config = github_store['repos'][repo]
+    repo_config = config_store['repos'][repo]
 
     if is_eod:
         repo_config = repo_config['eod']

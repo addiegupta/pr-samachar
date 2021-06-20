@@ -1,4 +1,11 @@
 {
+  "reviewers": {
+    "atul_kumar": "Atul Kumar",
+    "ayudh": "Ayudh Gupta"
+  },
+  "channels": {
+    "rmsv2-pr-samachar": "C023H7UTHFU"
+  },
   "organisation": "usernames",
   "repos": {
     "sentieoweb": {
@@ -10,9 +17,6 @@
       "excluded_labels": [
         "Don't Merge",
         "Requested"
-      ],
-      "other_labels": [
-        "Changes made"
       ],
       "draft": "false",
       "config": {

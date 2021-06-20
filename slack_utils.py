@@ -11,6 +11,9 @@ dirname = os.path.dirname(__file__)
 slack_filename = os.path.join(dirname, 'slack_store.json')
 slack_store = json.load(open(slack_filename))
 
+config_filename = os.path.join(dirname, 'config.json')
+config_store = json.load(open(config_filename))
+
 # To display only emoji for the day; else include all till stale limit
 single_emoji_mode = True
 
@@ -175,7 +178,7 @@ def get_pr_message_text(pr, i):
 
 def get_top_header_text(prs):
     prs_available = len(prs) > 0
-    reviewers = ', '.join(slack_store['reviewers'].values())
+    reviewers = ', '.join(config_store['reviewers'].values())
 
     salutation = slack_store['message_template']['salutation'] % reviewers
     message_status_key = 'prs_available' if prs_available else 'prs_not_available'
@@ -324,8 +327,8 @@ def create_eod_report_message(prs_dict):
 
 def send_to_slack(message, blocks=[]):
     slack_url = get_post_message_url()
-    for channel_name in slack_store['channels']:
-        channel_id = slack_store['channels'][channel_name]
+    for channel_name in config_store['channels']:
+        channel_id = config_store['channels'][channel_name]
         body = {
             'channel': channel_id,
             'text': message,  # fallback for notification / or main param when blocks are not present

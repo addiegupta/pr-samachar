@@ -1,11 +1,4 @@
 {
-  "reviewers": {
-    "atul_kumar": "Atul Kumar",
-    "ayudh": "Ayudh Gupta"
-  },
-  "channels": {
-    "rmsv2-pr-samachar": "C023H7UTHFU"
-  },
   "message_template": {
     "salutation": "Namaste %s!",
     "prs_available": "Here are the %s open pull requests worth looking into today",
