@@ -2,7 +2,7 @@
 import pyperclip
 import argparse
 
-from date_utils import get_string_from_date, get_utc_now, get_date_from_string
+from date_utils import get_string_from_date, get_utc_now
 from file_utils import get_last_eod_script_date, write_to_eod_file
 from github_utils import set_github_pat, fetch_prs_for_repo, get_repos, fetch_eod_prs_for_repo
 from slack_utils import create_reminder_message, set_slack_token, send_to_slack, can_send_slack, \
@@ -26,7 +26,7 @@ def main():
     repos = get_repos()
 
     if eod_mode:
-        last_eod_date = get_date_from_string(get_last_eod_script_date())
+        last_eod_date = get_last_eod_script_date()
         for repo in repos:
             prs_dict = fetch_eod_prs_for_repo(repo, last_eod_date)
             if prs_dict is None:

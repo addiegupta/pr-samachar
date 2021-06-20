@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 date_time_format = '%Y-%m-%dT%H:%M:%SZ'
 
 
 def get_date_from_string(date):
+    if not date:
+        return None
     return datetime.strptime(date, date_time_format)
 
 
@@ -21,3 +23,7 @@ def get_days_diff(dateA, dateB):
 
 def get_hours_diff(dateA, dateB):
     return int((dateA - dateB).total_seconds() // 3600)
+
+
+def subtract_hours_from_date(date, hours):
+    return date - timedelta(hours=hours)
