@@ -83,3 +83,6 @@ If slack token is not provided, a slightly different message layout (without use
 - Reviewer and channel info also needs to be added to `all_channels` and `all_reviewers` objects
 
 - PR health messages can be changed in `slack_store.json` file
+
+![image](https://user-images.githubusercontent.com/70014439/122677814-974ae400-d201-11eb-9d98-43cf9b352ce4.png)
+
