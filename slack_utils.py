@@ -283,8 +283,8 @@ def get_content_blocks(valid_prs, top_header_text=None):
         blocks.append(button_block)
         blocks.append(get_divider_block())
 
-    dummy_merge_all_section = get_button_block('Merge All PRs', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'danger')
-    blocks.append(dummy_merge_all_section)
+    merge_all_section = get_button_block('Merge All PRs', 'https://bit.ly/3gGrmtC', 'danger')
+    blocks.append(merge_all_section)
     return blocks
 
 
