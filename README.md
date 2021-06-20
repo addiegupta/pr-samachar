@@ -4,7 +4,7 @@ Slack bot for Daily PR Reminders
 
 ## Usage
 
-`pr-samachar.py [-h] [-e] gpat [slacktoken]`
+### `pr-samachar.py [-h] [-e] gpat [slacktoken]`
 
 ```
 The following arguments are required:
